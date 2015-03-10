@@ -1,9 +1,6 @@
 gem 'rspec', '~> 2.4'
 require 'rspec'
-require 'chatter/version'
-require 'chatter/config'
-require 'chatter/bot'
-require 'chatter/bots/eliza'
+require 'chatter'
 
 include Chatter
 

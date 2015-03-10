@@ -1,8 +1,10 @@
 require 'chatter/version'
 require 'chatter/config'
+require 'chatter/brain'
 require 'chatter/bot'
 
 require 'chatter/bots/eliza'
+require 'chatter/bots/clever'
 
 module Chatter
   class Harness

@@ -1,2 +1,5 @@
 html/
 pkg/
+logs/*.log
+tags
+.bundle/
