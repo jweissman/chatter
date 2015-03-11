@@ -1,8 +1,22 @@
 require 'spec_helper'
 
-describe Bot do
-  
+class Sample < Bot
+  def parse(input)
+    if input =~ /hi/
+      @response = 'Hi'
+    elsif input =~ /movies/
+      @response = 'Movies are cool'
+    elsif input =~ /bye/
+      @response = 'Bye'
+      @active = false
+    else 
+      @response = 'what? :('
+    end
+  end
+end
 
+describe Bot do
+  subject { Sample.new }
 
   it 'should match a configured pattern' do
     stdin = double

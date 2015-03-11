@@ -37,9 +37,9 @@ PLATFORMS
 
 DEPENDENCIES
   aruba
-  rake (= 10.1.0)
-  rdoc (= 4.1.0)
+  rake
+  rdoc
   rspec
   rspec-expectations
   rspec-mocks
-  rubygems-tasks (= 0.2.4)
+  rubygems-tasks

@@ -1,3 +1,5 @@
+require 'logger'
+
 require 'chatter/version'
 require 'chatter/config'
 require 'chatter/brain'
@@ -16,8 +18,7 @@ module Chatter
       @bot = Default.bot
       @bot.converse!(@stdin,@stdout,@stderr)
 
-      # your code here, assign a value to exitstatus
-      @kernel.exit(0) #exitstatus)
+      @kernel.exit(0) 
     end
   end
 end

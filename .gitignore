@@ -1,5 +1,7 @@
 html/
 pkg/
-logs/*.log
+logs/
+tmp/
 tags
 .bundle/
+*.dat

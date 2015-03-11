@@ -34,7 +34,7 @@ module Chatter
       @store = {}
     end
 
-    def load_memory(from="data/brain.dat")
+    def load_memory(from="brain.dat")
       if File.exists?(from)
 	File.open(from) do |f| 
 	  @store = Marshal.load(f)
@@ -42,7 +42,7 @@ module Chatter
       end
     end
 
-    def dump_memory(to="data/brain.dat")
+    def dump_memory(to="brain.dat")
       File.open(to, 'w') { |f| Marshal.dump(@store, f) }
     end
   end

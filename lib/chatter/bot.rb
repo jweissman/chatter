@@ -1,5 +1,3 @@
-require 'logger'
-
 module Chatter
   class Bot
     def initialize
@@ -7,6 +5,8 @@ module Chatter
       @greeting = Default.greeting
       @response = nil
       @active   = true
+
+      Dir.mkdir('logs') unless Dir.exists?('logs')
       @log      = Logger.new("logs/#@name.log")
     end
   
@@ -30,16 +30,7 @@ module Chatter
     end
 
     def parse(input)
-      if input =~ /hi/
-        @response = 'Hi'
-      elsif input =~ /movies/
-        @response = 'Movies are cool'
-      elsif input =~ /bye/
-        @response = 'Bye'
-        @active = false
-      else 
-        @response = 'what? :('
-      end
+      raise 'implement in subclass'
       self
     end
 
@@ -50,7 +41,7 @@ module Chatter
     end
 
     def read(pipe_in=STDIN)
-      @message = pipe_in.gets
+      @message = pipe_in.gets.chomp
       @log.info "HUMAN: #@message"
       self
     end
