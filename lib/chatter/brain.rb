@@ -1,21 +1,34 @@
 module Chatter
   module Brain
+    protected
+    def on(context)
+      @context = context
+      self
+    end
+
+    def say(message)
+      remember(message, @context)
+      self
+    end
+
     def remember(message, context="")
       add(message.chomp, context)
       dump_memory # for now update memory every time, just in case user quits with ^C
       self
     end
 
-    def response_to(msg)
+    def respond_to(msg)
       msg.chomp!
       options = store.has_key?(msg) ? memories_for(msg) : stock_phrases
-      options.sample
+      @response = options.sample
+      self 
     end
 
     def memories_for(msg)
       store[msg]
     end
 
+    private
     def store
       @store ||=  {}
     end

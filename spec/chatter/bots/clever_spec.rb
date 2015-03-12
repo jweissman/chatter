@@ -1,39 +1,43 @@
 require 'spec_helper'
 
 describe Bots::Clever do
+  let(:harness) { double(read: nil) }
+  before { subject.use_harness(harness) }
+
   it 'should respond to a prompt' do
-    subject.remember("hello", "hi")
-    expect(subject.response_to("hi")).to eql("hello")
+    subject.send(:remember, "hello", "hi")
+
+    subject.set_message("hi")
+    expect(harness).to receive(:write).with("hello")
+    subject.converse
   end
 
   it 'should remember multiple things for a given prompt' do
     msg = "hi"
-    subject.remember("hello", msg)
-    subject.remember("hey", msg)
-    expect(subject.memories_for(msg)).to eql(["hello", "hey"])
+    subject.send(:remember,"hello", msg)
+    subject.send(:remember,"hey", msg)
+    expect(subject.send(:memories_for,msg)).to eql(["hello", "hey"])
   end
 
   let(:out) { StringIO.new }
   it 'should remember your words' do
-    out = StringIO.new
-    stdin = double
+    expect(harness).to receive(:write).with(Default.greeting)
+    subject.greet
 
-    expect(stdin).to receive(:gets).and_return(
-      "hello there",     # train
-      Default.greeting,  # prompt
-      "goodbye"          # stop
-    )
+    subject.set_message("hello there")    # train a response to greeting
+    expect(harness).to receive(:write)    
+    subject.converse
 
-    subject.converse!(stdin,out)
-
-    expect(out.string.split("\n")[2]).to eql( "hello there" ) # trained response
+    subject.set_message(Default.greeting) # prompt with greeting
+    expect(harness).to receive(:write).with("hello there")
+    subject.converse
   end
 
   it 'should keep track between invocations' do
-    subject.remember("something", "good")
+    subject.send(:remember,"something", "good")
     subject.send(:dump_memory)
-    subject.clear_memory
+    subject.send(:clear_memory)
     subject.send(:load_memory)
-    expect(subject.memories_for("good")).to eql(["something"])
+    expect(subject.send(:memories_for,"good")).to eql(["something"])
   end
 end

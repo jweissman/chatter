@@ -7,23 +7,25 @@ class Sample < Bot
     elsif input =~ /movies/
       @response = 'Movies are cool'
     elsif input =~ /bye/
+      deactivate
       @response = 'Bye'
-      @active = false
     else 
-      @response = 'what? :('
+      @response = 'what?'
     end
   end
 end
 
 describe Bot do
+  let(:harness) { double(:read => nil) }
   subject { Sample.new }
+  before { subject.use_harness(harness) }
 
   it 'should match a configured pattern' do
-    stdin = double
-    out = StringIO.new
-    expect(stdin).to receive(:gets).and_return("well hi there\n")
-    subject.converse(stdin,out)
-    expect(out.string).to eql("Hi\n")
+    message, reply = "well hi there", "Hi"
+    subject.set_message(message)
+    expect(harness).to receive(:write).with(reply)
+
+    subject.converse   
   end
 
   let(:script) do
@@ -35,28 +37,26 @@ describe Bot do
   end
 
   it 'should converse interactively' do
-    stdin = double
     script.each do |line|
-      out = StringIO.new
-      expect(stdin).to receive(:gets).and_return(line[:hear])
-      subject.converse(stdin, out)
-      expect(out.string.chomp).to eql(line[:say])
+      message, reply = line[:hear], line[:say]
+      subject.set_message(message)
+      expect(harness).to receive(:write).with(reply)
+      subject.converse
     end
   end
 
   it 'should say goodbye' do
-    out = StringIO.new
-    stdin = double(:gets => "well bye there\n")
-    subject.converse(stdin,out)
-    expect(out.string).to eql("Bye\n")
+    message, reply = "well bye", "Bye"
+    subject.set_message(message)
+    expect(harness).to receive(:write).with(reply)
+    subject.converse
   end
  
-  # kind of an integration test, hopefully to be supplemented with aruba?
   it 'should greet you, initiate interactivity and bid goodbye' do
-    out = StringIO.new
-    stdin = double
-    expect(stdin).to receive(:gets).and_return("goodbye\n")
-    subject.converse!(stdin, out)
-    expect(out.string).to eql("Hello\nBye\n")
+    message = "well bye"
+    subject.set_message(message)
+    expect(harness).to receive(:write).with("Hello!")
+    expect(harness).to receive(:write).with("Bye")
+    subject.converse! 
   end
 end

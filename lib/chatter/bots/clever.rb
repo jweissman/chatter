@@ -3,30 +3,32 @@ module Chatter
     class Clever < Bot
       include Brain
 
-      def conversation
-	@conversation ||= []
-      end
-
       def parse(message)
 	message.chomp!
-	remember(message, conversation.last)
+	on(conversation.last).say(message)
+
 	conversation << message
 
 	if message =~ /bye/
-	  @active = false 
 	  @response = 'later!'
+	  deactivate
 	else
-	  @response = response_to(message)
+	  respond_to(message)
 	end
 
 	conversation << @response
 	self
       end
 
-      def greet(pipe_out=STDOUT)
+      def greet
 	load_memory
 	conversation << @greeting
-	super(pipe_out)
+	super
+      end
+
+      protected
+      def conversation
+	@conversation ||= []
       end
     end
   end

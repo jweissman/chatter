@@ -4,10 +4,12 @@ module Chatter
 
   class Default < Config
     def self.greeting
-      'Hello' #Hi there! What is your name?'
+      'Hello!'
     end
 
-    def self.bot; Chatter::Bots::Clever.new end
+    def self.bot
+      Chatter::Bots::Clever.new 
+    end
   end
 end
 

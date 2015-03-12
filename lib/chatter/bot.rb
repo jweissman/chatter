@@ -1,54 +1,64 @@
 module Chatter
   class Bot
+    include Logging
+
     def initialize
-      @name     = self.class.name.split('::').last
       @greeting = Default.greeting
       @response = nil
       @active   = true
-
-      Dir.mkdir('logs') unless Dir.exists?('logs')
-      @log      = Logger.new("logs/#@name.log")
     end
   
-    def converse!(sin=STDIN,sout=STDOUT,serr=STDERR)
-      @log.info "---> converse!"
-      greet(sout)
-      converse(sin,sout,serr) while active?
+    def converse!
+      greet
+      converse while is_active?
+      self
     end
 
-    def converse(pipe_in=STDIN,pipe_out=STDOUT,pipe_err=STDERR)
-      read(pipe_in)
-      parse(@message)
-      write(@response, pipe_out)
+    def converse
+      read
+      parse @message
+      info "got:  #@message"
+      write @response
+      info "sent: #@response"
+      self
+    end
+
+    def set_message(message)
+      @message = message
+      self
+    end
+
+    def use_harness(harness)
+      @harness = harness
+      self
+    end
+
+    def greet
+      write @greeting
+      self
+    end
+
+    def deactivate
+      @active = false
       self
     end
 
     protected
-
-    def greet(pipe_out=STDOUT)
-      write(@greeting, pipe_out)
-    end
-
     def parse(input)
-      raise 'implement in subclass'
+      deactivate if input =~ /bye/
       self
     end
 
-    def write(msg, pipe_out=STDOUT)
-      @log.info "#{@name.upcase}: #{msg}"
-      pipe_out.puts(msg)
-      self
+    def write(msg)
+      @harness.write(msg)
     end
 
-    def read(pipe_in=STDIN)
-      @message = pipe_in.gets.chomp
-      @log.info "HUMAN: #@message"
-      self
+    def read
+      @harness.read
     end
 
     private
-
-    def active?
+    def is_active?
       @active
     end
   end
